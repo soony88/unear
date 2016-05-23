@@ -10,7 +10,7 @@ import java.util.Date;
 public class DateUtils {
 
     public static String dateToString(Date date) {
-        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy"); // Format of date
+        SimpleDateFormat dateFormat = new SimpleDateFormat("kk:mm dd/MM/yyyy"); // Format of date
         String myString = new String();
         try {
             myString = dateFormat.format(date); // Parse
@@ -23,7 +23,7 @@ public class DateUtils {
     }
 
     public static Date stringToDate(String date) {
-        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+        SimpleDateFormat dateFormat = new SimpleDateFormat("kk:mm dd/MM/yyyy");
         Date myDate = new Date();
         try {
             myDate = dateFormat.parse(date);

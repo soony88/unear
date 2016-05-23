@@ -8,24 +8,82 @@ import java.util.Date;
  */
 public class UnearEvent implements Serializable {
 
+    // Database table
+    public static final String TABLE_NAME = "event";
+    public static final String COLUMN_ID = "_id";
+    public static final String COLUMN_NAME = "name";
+    public static final String COLUMN_CAMPUS = "campus"; // TODO: may be able to remove this if I wire up campus and events properly
+    public static final String COLUMN_LATITUDE = "latitude";
+    public static final String COLUMN_LONGITUDE = "longitude";
+    public static final String COLUMN_STARTDATE = "startDate";
+    public static final String COLUMN_ENDDATE = "endDate";
+    public static final String COLUMN_TYPE = "type";
+    public static final String COLUMN_DESCRIPTION = "description";
+
+    public static final String CREATE_STATEMENT =
+            "CREATE TABLE" + TABLE_NAME + "(" +
+                    COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
+                    COLUMN_NAME + " TEXT NOT NULL, " +
+                    COLUMN_CAMPUS + " TEXT NOT NULL, " +
+                    COLUMN_LATITUDE + " DOUBLE NOT NULL, " +
+                    COLUMN_LONGITUDE + " DOUBLE NOT NULL, " +
+                    COLUMN_STARTDATE + " TEXT NOT NULL, " +
+                    COLUMN_ENDDATE + " TEXT NOT NULL, " +
+                    COLUMN_TYPE + " TEXT NOT NULL, " +
+                    COLUMN_DESCRIPTION + " TEXT NOT NULL, " +
+                    ")";
+    // TODO: may be able to remove campus if I wire up campus and events properly
+
+    // Class attributes
+
+    // Identification
+    private long id;
     private String eventName;
+
+    // Location
+    private String campus;
     private double latitude;
     private double longitude;
 
-    private Date startTime;
-    private Date endTime;
+    // When
+    private Date startDate;
+    private Date endDate;
 
+    // Description
     private String eventType;
     private String eventDescription;
 
-    public UnearEvent(String eventName, double latitude, double longitude, Date startTime, Date endTime, String eventType, String eventDescription) {
+    // Constructor
+    public UnearEvent(String eventName, String campus, double latitude, double longitude, Date startDate, Date endDate, String eventType, String eventDescription) {
         this.eventName = eventName;
+        this.campus = campus;
         this.latitude = latitude;
         this.longitude = longitude;
-        this.startTime = startTime;
-        this.endTime = endTime;
+        this.startDate = startDate;
+        this.endDate = endDate;
         this.eventType = eventType;
         this.eventDescription = eventDescription;
+    }
+
+    // Database Constructor
+    public UnearEvent(long id, String eventName, String campus, double latitude, double longitude, Date startDate, Date endDate, String eventType, String eventDescription) {
+        this.id = id;
+        this.eventName = eventName;
+        this.campus = campus;
+        this.latitude = latitude;
+        this.longitude = longitude;
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.eventType = eventType;
+        this.eventDescription = eventDescription;
+    }
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
     }
 
     public String getEventName() {
@@ -34,6 +92,14 @@ public class UnearEvent implements Serializable {
 
     public void setEventName(String eventName) {
         this.eventName = eventName;
+    }
+
+    public String getCampus() {
+        return campus;
+    }
+
+    public void setCampus(String campus) {
+        this.campus = campus;
     }
 
     public double getLatitude() {
@@ -52,20 +118,20 @@ public class UnearEvent implements Serializable {
         this.longitude = longitude;
     }
 
-    public Date getStartTime() {
-        return startTime;
+    public Date getStartDate() {
+        return startDate;
     }
 
-    public void setStartTime(Date startTime) {
-        this.startTime = startTime;
+    public void setStartDate(Date startTime) {
+        this.startDate = startTime;
     }
 
-    public Date getEndTime() {
-        return endTime;
+    public Date getEndDate() {
+        return endDate;
     }
 
-    public void setEndTime(Date endTime) {
-        this.endTime = endTime;
+    public void setEndDate(Date endTime) {
+        this.endDate = endTime;
     }
 
     public String getEventType() {

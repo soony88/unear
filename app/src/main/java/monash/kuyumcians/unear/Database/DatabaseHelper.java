@@ -7,8 +7,11 @@ import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
+import java.util.ArrayList;
 import java.util.Date;
 
+import monash.kuyumcians.unear.Models.UnearEvent;
+import monash.kuyumcians.unear.Models.SearchFilter;
 import monash.kuyumcians.unear.Utils.CustomToast;
 import monash.kuyumcians.unear.Utils.DateUtils;
 
@@ -30,7 +33,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         try {
-            db.execSQL(SearchFilter.CREATE_STATEMENT);
+            db.execSQL(UnearEvent.CREATE_STATEMENT);
         } catch (SQLException e) {
             CustomToast.displayToast(context, "" + e);
         }
@@ -38,74 +41,103 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        db.execSQL("DROP TABLE IF EXISTS " + SearchFilter.TABLE_NAME);
-
+        db.execSQL("DROP TABLE IF EXISTS " + UnearEvent.TABLE_NAME);
         try {
-            db.execSQL(SearchFilter.CREATE_STATEMENT);
+//            db.execSQL(SearchFilter.CREATE_STATEMENT);
         } catch (SQLException e) {
             CustomToast.displayToast(context, "" + e);
         }
     }
 
-    public void addFilter(SearchFilter searchFilter) {
+    public void addEvent(UnearEvent event) {
 
         SQLiteDatabase db = this.getWritableDatabase();
 
         ContentValues contentValues = new ContentValues();
-        contentValues.put(SearchFilter.COLUMN_CAMPUS,searchFilter.getCampus());
-        contentValues.put(SearchFilter.COLUMN_STARTDATE, DateUtils.dateToString(searchFilter.getStartDate()));
-        contentValues.put(SearchFilter.COLUMN_ENDDATE,DateUtils.dateToString(searchFilter.getEndDate()));
+        contentValues.put(event.COLUMN_NAME, event.getEventName());
+        contentValues.put(event.COLUMN_CAMPUS, event.getCampus());
+        contentValues.put(event.COLUMN_LATITUDE, event.getLatitude());
+        contentValues.put(event.COLUMN_LONGITUDE, event.getLongitude());
+
+        String stringStartDate = DateUtils.dateToString(event.getStartDate());
+        contentValues.put(event.COLUMN_STARTDATE, stringStartDate);
+
+        String stringEndDate = DateUtils.dateToString(event.getEndDate());
+        contentValues.put(event.COLUMN_ENDDATE, stringEndDate);
+
+        contentValues.put(event.COLUMN_TYPE, event.getEventType());
+        contentValues.put(event.COLUMN_DESCRIPTION, event.getEventDescription());
 
         //Inserting into database
-        long id = db.insert(SearchFilter.TABLE_NAME, null, contentValues);
-        searchFilter.setId(id);
+        long id = db.insert(event.TABLE_NAME, null, contentValues);
+        event.setId(id);
+
+        CustomToast.displayToast(context, "Added to saved events");
 
         db.close();
     }
 
-    public void  updateFilter(SearchFilter searchFilter) {
+    public void  updateEvent(UnearEvent event) {
 
         SQLiteDatabase db = this.getWritableDatabase();
 
         ContentValues contentValues = new ContentValues();
-        contentValues.put(SearchFilter.COLUMN_CAMPUS,searchFilter.getCampus());
-        contentValues.put(SearchFilter.COLUMN_STARTDATE, DateUtils.dateToString(searchFilter.getStartDate()));
-        contentValues.put(SearchFilter.COLUMN_ENDDATE,DateUtils.dateToString(searchFilter.getEndDate()));
+        contentValues.put(event.COLUMN_NAME, event.getEventName());
+        contentValues.put(event.COLUMN_CAMPUS, event.getCampus());
+        contentValues.put(event.COLUMN_LATITUDE, event.getLatitude());
+        contentValues.put(event.COLUMN_LONGITUDE, event.getLongitude());
+
+        String stringStartDate = DateUtils.dateToString(event.getStartDate());
+        contentValues.put(event.COLUMN_STARTDATE, stringStartDate);
+
+        String stringEndDate = DateUtils.dateToString(event.getEndDate());
+        contentValues.put(event.COLUMN_ENDDATE, stringEndDate);
+
+        contentValues.put(event.COLUMN_TYPE, event.getEventType());
+        contentValues.put(event.COLUMN_DESCRIPTION, event.getEventDescription());
 
         // Use the id
-        long id = searchFilter.getId();
+        long id = event.getId();
 
-        db.update(searchFilter.TABLE_NAME, contentValues, searchFilter.COLUMN_ID + " = " + id, null);
+        db.update(event.TABLE_NAME, contentValues, event.COLUMN_ID + " = " + id, null);
 
         db.close();
         //Toast to let the user know that database has been updated
-        CustomToast.displayToast(context, "Preference Saved");
+        CustomToast.displayToast(context, "Changes Saved");
     }
 
-    public SearchFilter getSearchFilter() {
+    public ArrayList<UnearEvent> getSavedEvents() {
 
-        SearchFilter searchFilter = null;
+        ArrayList<UnearEvent> events = null;
         SQLiteDatabase db = this.getReadableDatabase();
 
         // Run select statement and access data via Cursor
-        Cursor cursor = db.rawQuery("SELECT * FROM " + SearchFilter.TABLE_NAME, null);
+        Cursor cursor = db.rawQuery("SELECT * FROM " + UnearEvent.TABLE_NAME, null);
 
-        //If there is a data source
+        // If there is a data source
         if(cursor.moveToFirst()) {
             do {
-                // TODO: Grab stuff
+                // Read values into parameters to call event constructor
                 long id = cursor.getLong(0);
-                String campus = cursor.getString(1);
-                Date startDate = DateUtils.stringToDate(cursor.getString(2));
-                Date endDate = DateUtils.stringToDate(cursor.getString(3));
-                searchFilter = new SearchFilter(id, campus, startDate, endDate);//, cursor.getInt(4), cursor.getInt(5), cursor.getInt(6), cursor.getInt(7));
+                String name = cursor.getString(1);
+                String campus = cursor.getString(2);
+                double latitude = cursor.getDouble(3);
+                double longitude = cursor.getDouble(4);
+                Date startDate = DateUtils.stringToDate(cursor.getString(5));
+                Date endDate = DateUtils.stringToDate(cursor.getString(6));
+                String type = cursor.getString(7);
+                String description = cursor.getString(8);
+
+                // Create the event and add to the ArrayList
+                UnearEvent event = new UnearEvent(id, name, campus, latitude, longitude,
+                        startDate, endDate, type, description);
+                events.add(event);
             }
-            //While the cursor can move to the next data source
-            while(cursor.moveToNext());
+            while(cursor.moveToNext()); // Repeat if there's another data entry
         }
 
         cursor.close();
-        // Return contents of table
-        return searchFilter;
+
+        return events;
     }
 }
