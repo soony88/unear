@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.Button;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -73,7 +74,17 @@ public class EventAdapter extends BaseAdapter {
         String stringStartDate = DateUtils.dateToString(events.get(i).getStartDate());
         vh.eventDate.setText(stringStartDate);
 
+        // Allow "Save Event" button to work in a listview
+        LayoutInflater inflater = LayoutInflater.from(context);
+        View row = inflater.inflate(R.layout.list_event_result_item, viewGroup, false);
+        Button saveEvent = (Button) row.findViewById(R.id.buttonSaveEvent);
+        saveEvent.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                // TODO Firebase stuff goes here
+                System.out.println("Pingers");
+            }
+        });
+
         return view;
     }
-
 }

@@ -1,5 +1,6 @@
 package monash.kuyumcians.unear.Utils;
 
+import android.app.Activity;
 import android.content.Context;
 import android.widget.Toast;
 
@@ -9,8 +10,6 @@ import android.widget.Toast;
 public class CustomToast {
 
     public static void displayToast(Context context, String message){
-
-        Toast.makeText(context,message,Toast.LENGTH_SHORT).show();
-
+        Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
     }
 }

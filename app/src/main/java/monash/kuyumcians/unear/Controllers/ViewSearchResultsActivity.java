@@ -1,5 +1,6 @@
 package monash.kuyumcians.unear.Controllers;
 
+import android.app.ActionBar;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.net.ParseException;
@@ -9,6 +10,8 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
+
+import com.firebase.client.Firebase;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -33,7 +36,7 @@ import monash.kuyumcians.unear.Utils.DateUtils;
 public class ViewSearchResultsActivity extends AppCompatActivity {
 
     public static final String JSON_DOWNLOAD_LOCATION =
-            "https://api.myjson.com/bins/1pi0m";
+            "https://api.myjson.com/bins/134mg";
 
     // UI components
     SearchFilter searchFilter;
@@ -41,48 +44,44 @@ public class ViewSearchResultsActivity extends AppCompatActivity {
     private EventAdapter adapter;
     private ArrayList<UnearEvent> events;
 
+    // Firebase
+//    Firebase mRef;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_view_search_results);
 
-        // Get out intent and pass in the parcelable Monster
-        Intent intent = getIntent();
-        searchFilter = intent.getParcelableExtra("searchFilter");
-
-        events = new ArrayList<UnearEvent>();
-
         // Link UI components
         searchResultsList = (ListView) findViewById(R.id.searchResultList);
 
-//        for (int i = 0; i < 3; i++) {
-//
-//            Date startDate = DateUtils.stringToDate("12:00 16/06/16");
-//            Date endDate = DateUtils.stringToDate("14:00 16/06/16");
-//            events.add(new UnearEvent("eventTitle", "eventCampus", 10, 10, startDate, endDate, "eventType", "eventDescription"));
-//        }
+        // Firebase
+//        mRef = new Firebase("https://project-4303376425926873832.firebaseio.com/events");
 
-        new SetupArticleDatasetTask().execute(JSON_DOWNLOAD_LOCATION);
+        // Grab parcelable SearchFilter from previous activity
+        Intent intent = getIntent();
+        searchFilter = intent.getParcelableExtra("searchFilter");
 
         // Link the ArrayList of events with the EventAdapter
+        events = new ArrayList<>();
         adapter = new EventAdapter(this, events);
-
-        // Associate adapter with ListView
         searchResultsList.setAdapter(adapter);
 
-        // On item click listener for editing reminders
+        // Retrieve JSON data
+        new SetupArticleDatasetTask().execute(JSON_DOWNLOAD_LOCATION);
+
+        // Allow user to tap on event to view event details
         searchResultsList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> av, View v, int i, long l)
             {
-                // Get selected reminder
+                // Get selected event
                 UnearEvent event = (UnearEvent) searchResultsList.getAdapter().getItem(i);
 
-                // TODO create event details view
-                //Setup Intent and pass the reminder object to the next activity (view reminder)
-//                Intent i = new Intent(v.getContext(), ViewEventDetailsActivity.class);
-//                i.putExtra("event", event);
-//                startActivity(i);
+                //Setup Intent and pass the event object to the next activity (view event)
+                Intent intent = new Intent(getApplicationContext(), ViewEventDetailsActivity.class);
+                intent.putExtra("event", event);
+                startActivity(intent);
             }
         });
     }
@@ -119,11 +118,7 @@ public class ViewSearchResultsActivity extends AppCompatActivity {
 
                     // Move down the JSON tree to where we want
                     JSONObject responseJson = resultJson.getJSONObject("responseData");
-
-                    System.out.println(responseJson);
-
                     JSONObject university = responseJson.getJSONObject("monashUniversity");
-
                     // Grab the array
                     JSONArray campusJsonArray = university.getJSONArray("campuses");
 
@@ -131,47 +126,41 @@ public class ViewSearchResultsActivity extends AppCompatActivity {
 
                         JSONObject campusJson = campusJsonArray.getJSONObject(i);
 
-                        if (campusJson.getString("campusName") == searchFilter.getCampus()) {
+                        if (campusJson.getString("campusName").equals(searchFilter.getCampus())) {
 
                             JSONArray eventsJsonArray = campusJson.getJSONArray("events");
 
                             for (int j = 0; j < eventsJsonArray.length(); j++) {
                                 // Grab the event object
-                                JSONObject eventJson = eventsJsonArray.getJSONObject(i);
+                                JSONObject eventJson = eventsJsonArray.getJSONObject(j);
 
                                 // Pull in the data into variables to call the constructor
-                                String eventName = eventJson.getString("eventName");
+                                String name = eventJson.getString("eventName");
                                 String campus = campusJson.getString("campusName");
+                                double latitude = Double.parseDouble(eventJson.getString("eventLatitude"));
+                                double longitude = Double.parseDouble(eventJson.getString("eventLongitude"));
+                                Date startDate = DateUtils.stringToDate(eventJson.getString("eventStartDate"));
+                                Date endDate = DateUtils.stringToDate(eventJson.getString("eventEndDate"));
+                                String type = eventJson.getString("eventType");
+                                String desc = eventJson.getString("eventDescription");
 
-                                String stringLatitude = eventJson.getString("eventLatitude");
-                                double latitude = Double.parseDouble(stringLatitude);
-
-                                String stringLongitude = eventJson.getString("eventLongitude");
-                                double longitude = Double.parseDouble(stringLongitude);
-
-
-                                String stringStartDate = eventJson.getString("eventStartDate");
-                                Date startDate = DateUtils.stringToDate(stringStartDate);
-
-                                String stringEndDate = eventJson.getString("eventEndDate");
-                                Date endDate = DateUtils.stringToDate(stringEndDate);
-
-                                String eventType = eventJson.getString("eventType");
-                                String eventDesc = eventJson.getString("eventDescription");
-
-                                if (searchFilter.getStartDate().compareTo(endDate) == 1) {
-                                    UnearEvent e = new UnearEvent(eventName, campus, latitude, longitude, startDate, endDate, eventType, eventDesc);
+                                if (endDate.compareTo(searchFilter.getStartDate()) == 1) {
+                                    UnearEvent e = new UnearEvent(name, campus, latitude, longitude, startDate, endDate, type, desc);
                                     events.add(e);
-                                    adapter.notifyDataSetChanged();
                                 }
                             }
+
+                            // Update listview
+                            adapter.notifyDataSetChanged();
                         }
                     }
+                    // Remove label
 //                    labelError.setVisibility(View.INVISIBLE);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
+            // Notify user of error
 //            labelError.setText("Could not retrieve results");
         }
     }

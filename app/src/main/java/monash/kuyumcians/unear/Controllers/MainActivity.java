@@ -2,6 +2,7 @@ package monash.kuyumcians.unear.Controllers;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -9,16 +10,15 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Spinner;
+import android.widget.TextView;
 
 import java.util.Date;
 
 import monash.kuyumcians.unear.Models.SearchFilter;
 import monash.kuyumcians.unear.R;
 import monash.kuyumcians.unear.Utils.DateUtils;
-
-import com.facebook.FacebookSdk;
-import com.facebook.appevents.AppEventsLogger;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -29,8 +29,8 @@ public class MainActivity extends AppCompatActivity {
     // UI components (in order of physical location on screen)
     Button buttonSearchUnearby;
     Spinner spinnerCampusSelector;
-    EditText textStartDate;
-    EditText textEndDate;
+    TextView labelStartDate;
+    TextView labelEndDate;
     Button buttonSearchEvents;
 
     // Other attributes
@@ -71,8 +71,8 @@ public class MainActivity extends AppCompatActivity {
         spinnerCampusSelector.setAdapter(adapter);
 
         // Date range
-        textStartDate = (EditText) findViewById(R.id.textStartDate);
-        textEndDate = (EditText) findViewById(R.id.textEndDate);
+        labelStartDate = (TextView) findViewById(R.id.labelStartDate);
+        labelEndDate = (TextView) findViewById(R.id.labelEndDate);
 
         // Search Events button
         buttonSearchEvents = (Button) findViewById(R.id.buttonSearchEvents);
@@ -90,16 +90,32 @@ public class MainActivity extends AppCompatActivity {
 
         // Read values of search parameters
         String campus = (String) spinnerCampusSelector.getSelectedItem();
-        String stringStartDate = textStartDate.getText().toString();
-        String stringEndDate = textEndDate.getText().toString();
+        String stringStartDate = labelStartDate.getText().toString();
+        String stringEndDate = labelEndDate.getText().toString();
 
-        Date startDate = DateUtils.stringToDate(stringStartDate);
-        Date endDate = DateUtils.stringToDate(stringEndDate);
+        Date startDate = DateUtils.stringToDate("00:00 " + stringStartDate);
+        Date endDate = DateUtils.stringToDate("23:59 " + stringEndDate);
 
         SearchFilter sf = new SearchFilter(campus, startDate, endDate);
 
         Intent i = new Intent(this, ViewSearchResultsActivity.class);
         i.putExtra("searchFilter", sf);
         startActivity(i);
+    }
+
+    public void pickStartDate(View view) {
+        DialogFragment startDatePicker = new DatePickerFragment();
+        Bundle bundle = new Bundle();
+        bundle.putString("date", "start");
+        startDatePicker.setArguments(bundle);
+        startDatePicker.show(getSupportFragmentManager(), "startDatePicker");
+    }
+
+    public void pickEndDate(View view) {
+        DialogFragment startDatePicker = new DatePickerFragment();
+        Bundle bundle = new Bundle();
+        bundle.putString("date", "end");
+        startDatePicker.setArguments(bundle);
+        startDatePicker.show(getSupportFragmentManager(), "endDatePicker");
     }
 }

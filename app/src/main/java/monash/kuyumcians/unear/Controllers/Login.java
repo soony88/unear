@@ -120,7 +120,6 @@ public class Login extends Activity {
 
         if (profile != null)
         {
-            System.out.println("Active profile");
             Intent i = new Intent(Login.this, MainActivity.class);
             i.putExtra("profile", profile);
             startActivity(i);
