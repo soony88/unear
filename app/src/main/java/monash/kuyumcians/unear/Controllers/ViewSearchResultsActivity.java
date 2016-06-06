@@ -1,9 +1,6 @@
 package monash.kuyumcians.unear.Controllers;
 
-import android.app.ActionBar;
-import android.app.ProgressDialog;
 import android.content.Intent;
-import android.net.ParseException;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -12,13 +9,13 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 
 import com.firebase.client.Firebase;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
@@ -27,7 +24,6 @@ import java.util.ArrayList;
 import java.util.Date;
 
 import monash.kuyumcians.unear.Adapters.EventAdapter;
-import monash.kuyumcians.unear.Models.Campus;
 import monash.kuyumcians.unear.Models.SearchFilter;
 import monash.kuyumcians.unear.Models.UnearEvent;
 import monash.kuyumcians.unear.R;
@@ -45,7 +41,8 @@ public class ViewSearchResultsActivity extends AppCompatActivity {
     private ArrayList<UnearEvent> events;
 
     // Firebase
-//    Firebase mRef;
+    FirebaseDatabase database;
+    DatabaseReference ref;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,7 +53,10 @@ public class ViewSearchResultsActivity extends AppCompatActivity {
         searchResultsList = (ListView) findViewById(R.id.searchResultList);
 
         // Firebase
-//        mRef = new Firebase("https://project-4303376425926873832.firebaseio.com/events");
+        database = FirebaseDatabase.getInstance();
+        ref = database.getReference("events");
+
+        ref.setValue("Hello event");
 
         // Grab parcelable SearchFilter from previous activity
         Intent intent = getIntent();

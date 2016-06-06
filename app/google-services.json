@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "187820663143",
+    "firebase_url": "https://project-4303376425926873832.firebaseio.com",
+    "project_id": "project-4303376425926873832",
+    "storage_bucket": "project-4303376425926873832.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:187820663143:android:2dcea9e8603be0b0",
+        "android_client_info": {
+          "package_name": "monash.kuyumcians.unear"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "187820663143-nc5gf5mh38u04ek3c4trou3tj3u91qnf.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBcQOPU9Vb2JVbHumHxwG60C6mfYGmW7qE"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

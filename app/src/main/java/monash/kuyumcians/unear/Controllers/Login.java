@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.Signature;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.os.Bundle;
 import android.util.AttributeSet;
@@ -25,15 +26,25 @@ import com.facebook.Profile;
 import com.facebook.ProfileTracker;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthCredential;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FacebookAuthProvider;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 import monash.kuyumcians.unear.R;
+import monash.kuyumcians.unear.Utils.CustomToast;
 
 public class Login extends Activity {
 
     private LoginButton loginButton;
+    private FirebaseAuth auth;
+    private FirebaseAuth.AuthStateListener authStateListener;
     private CallbackManager callbackManager;
     private AccessTokenTracker accessTokenTracker;
     private ProfileTracker profileTracker;
@@ -41,23 +52,18 @@ public class Login extends Activity {
     private FacebookCallback<LoginResult> facebookCallback = new FacebookCallback<LoginResult>() {
         @Override
         public void onSuccess(LoginResult loginResult) {
-            AccessToken accessToken = loginResult.getAccessToken();
-
-            Profile profile = Profile.getCurrentProfile();
+            handleFacebookAccessToken(loginResult.getAccessToken());
 
             Intent i = new Intent(Login.this, MainActivity.class);
-            i.putExtra("profile", profile);
             startActivity(i);
         }
 
         @Override
         public void onCancel() {
-
         }
 
         @Override
         public void onError(FacebookException error) {
-
         }
     };
 
@@ -72,6 +78,14 @@ public class Login extends Activity {
         this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
         setContentView(R.layout.activity_login);
+
+        // Firebase Auth
+        auth = FirebaseAuth.getInstance();
+        authStateListener = new FirebaseAuth.AuthStateListener() {
+            @Override
+            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+            }
+        };
 
         // Callback manager and trackers
         callbackManager = CallbackManager.Factory.create();
@@ -113,23 +127,18 @@ public class Login extends Activity {
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
-
-        Profile profile = Profile.getCurrentProfile();
-
-        if (profile != null)
-        {
-            Intent i = new Intent(Login.this, MainActivity.class);
-            i.putExtra("profile", profile);
-            startActivity(i);
-        }
+    protected void onStart() {
+        super.onStart();
+        auth.addAuthStateListener(authStateListener);
     }
 
     @Override
     public void onStop() {
         super.onStop();
 
+        if (authStateListener != null) {
+            auth.removeAuthStateListener(authStateListener);
+        }
         accessTokenTracker.stopTracking();
         profileTracker.stopTracking();
     }
@@ -139,5 +148,19 @@ public class Login extends Activity {
         super.onActivityResult(requestCode, resultCode, data);
 
         callbackManager.onActivityResult(requestCode, resultCode, data);
+    }
+
+    private void handleFacebookAccessToken(AccessToken token) {
+
+        AuthCredential credential = FacebookAuthProvider.getCredential(token.getToken());
+        auth.signInWithCredential(credential)
+            .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                @Override
+                public void onComplete(@NonNull Task<AuthResult> task) {
+                    if (!task.isSuccessful()) {
+                        CustomToast.displayToast(Login.this, "Authentication failed.");
+                    }
+                }
+        });
     }
 }
