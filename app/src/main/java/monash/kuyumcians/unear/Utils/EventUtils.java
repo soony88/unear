@@ -28,9 +28,11 @@ public class EventUtils {
     }
 
     public static boolean withinFilter(UnearEvent event, SearchFilter sf) {
-        if (sf.getStartDate().compareTo(event.getEndDate()) == 1 &&
-                event.getCampus().equals(sf.getCampus())) {
-            return true;
+        if (event.getCampus().equals(sf.getCampus())) {
+            // search filter start date set before the event ends
+            if (sf.getStartDate().compareTo(event.getEndDate()) == -1 && sf.getEndDate().compareTo(event.getStartDate()) == 1) { // search filter end date set after the event starts
+                return true;
+            }
         }
         return false;
     }

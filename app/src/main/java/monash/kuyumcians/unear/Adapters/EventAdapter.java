@@ -30,7 +30,8 @@ public class EventAdapter extends BaseAdapter {
 
     public static class ViewHolder {
         TextView eventName;
-        TextView eventDate;
+        TextView eventStartDate;
+        TextView eventEndDate;
     }
 
     @Override
@@ -63,7 +64,8 @@ public class EventAdapter extends BaseAdapter {
             // Setup ViewHolder and attach to view
             vh = new ViewHolder();
             vh.eventName = (TextView) view.findViewById(R.id.labelEventName);
-            vh.eventDate = (TextView) view.findViewById(R.id.labelDateRange);
+            vh.eventStartDate = (TextView) view.findViewById(R.id.labelStart);
+            vh.eventEndDate = (TextView) view.findViewById(R.id.labelEnd);
             view.setTag(vh);
         } else {
             // View has already been created, fetch our ViewHolder
@@ -73,9 +75,9 @@ public class EventAdapter extends BaseAdapter {
         vh.eventName.setText(events.get(i).getEventName());
 
         String stringStartDate = DateUtils.dateToString(events.get(i).getStartDate());
-        long diff = events.get(i).getEndDate().getTime() - events.get(i).getStartDate().getTime();
-        String diffHours = Long.toString(diff / (60 * 60 * 1000));
-        vh.eventDate.setText(stringStartDate + " - " + diffHours + "hrs");
+        String stringEndDate = DateUtils.dateToString(events.get(i).getEndDate());
+        vh.eventStartDate.setText(stringStartDate + " - ");
+        vh.eventEndDate.setText(stringEndDate);
 
         // Allow "Save Event" button to work in a listview
         LayoutInflater inflater = LayoutInflater.from(context);

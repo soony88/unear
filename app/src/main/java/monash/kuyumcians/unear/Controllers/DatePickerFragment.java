@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.widget.DatePicker;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.util.Date;
 import java.util.Calendar;
@@ -37,7 +36,7 @@ public class DatePickerFragment extends DialogFragment
 
         final Calendar c = Calendar.getInstance();
         int year = c.get(Calendar.YEAR);
-        int month = c.get(Calendar.MONTH);
+        int month = c.get(Calendar.MONTH) + 1;
         int day = c.get(Calendar.DAY_OF_MONTH);
 
         if (this.date.equals("start")) {
@@ -64,30 +63,29 @@ public class DatePickerFragment extends DialogFragment
         }
 
         // Create a new instance of DatePickerDialog and return it
-        return new DatePickerDialog(getActivity(), this, year, month, day);
+        return new DatePickerDialog(getActivity(), this, year, month-1, day);
     }
 
     public void onDateSet(DatePicker view, int year, int month, int day) {
         // Do something with the date chosen by the user
-        String stringDate = Integer.toString(day) + "/" + Integer.toString(month) + "/" + Integer.toString(year);
+        String stringDate = Integer.toString(day) + "/" + Integer.toString(month+1) + "/" + Integer.toString(year);
 
         if (this.date.equals("start")) {
             // Start date must be before the end date
-
             // If end date has been set, perform the check
             if (!labelEndDate.getText().toString().equals("Select Date")) {
                 Date startDate = DateUtils.stringToDate("00:00 " + stringDate);
-                Date endDate = DateUtils.stringToDate("23:59 " + labelEndDate.getText().toString());
+                Date endDate = DateUtils.stringToDate("23:59 " + labelEndDate.getText().toString()); // -1 to month since label shows true month
                 // The 'compareTo' function returns 1 if endDate comes before the selected date for startDate
                 if (startDate.compareTo(endDate) == 1) {
                     CustomToast.displayToast(getActivity(), "Start date must be before the end date");
                 } else {
                     // Otherwise set the date
-                    labelStartDate.setText(stringDate);
+                    labelStartDate.setText(stringDate); // Add 1 month to label to show true month
                 }
             } else {
                 // Otherwise set the date
-                labelStartDate.setText(stringDate);
+                labelStartDate.setText(stringDate); // Add 1 month to label to show true month
             }
         } else {
             // And vice versa for setting the end date
