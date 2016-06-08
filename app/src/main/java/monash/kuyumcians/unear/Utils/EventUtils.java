@@ -1,6 +1,7 @@
 package monash.kuyumcians.unear.Utils;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.Map;
 
@@ -26,7 +27,11 @@ public class EventUtils {
         return event;
     }
 
-    public static void updateEventsList(ArrayList<UnearEvent> events, SearchFilter sf) {
-
+    public static boolean withinFilter(UnearEvent event, SearchFilter sf) {
+        if (sf.getStartDate().compareTo(event.getEndDate()) == 1 &&
+                event.getCampus().equals(sf.getCampus())) {
+            return true;
+        }
+        return false;
     }
 }

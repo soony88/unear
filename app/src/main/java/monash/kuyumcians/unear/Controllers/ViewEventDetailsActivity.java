@@ -12,7 +12,8 @@ import monash.kuyumcians.unear.Utils.DateUtils;
 public class ViewEventDetailsActivity extends AppCompatActivity {
 
     private TextView eventName;
-    private TextView eventDate;
+    private TextView eventStartDate;
+    private TextView eventEndDate;
     private TextView eventDesc;
 
     private UnearEvent currentEvent;
@@ -29,13 +30,15 @@ public class ViewEventDetailsActivity extends AppCompatActivity {
         currentEvent =intent.getParcelableExtra("event");
 
         eventName.setText(currentEvent.getEventName());
-        eventDate.setText(DateUtils.dateToString(currentEvent.getStartDate()));
+        eventStartDate.setText(DateUtils.dateToString(currentEvent.getStartDate()) + " -");
+        eventEndDate.setText(DateUtils.dateToString(currentEvent.getEndDate()));
         eventDesc.setText(currentEvent.getEventDescription());
     }
 
     private void InitialiseUiComponents() {
         eventName = (TextView) findViewById(R.id.labelEventName);
-        eventDate = (TextView) findViewById(R.id.labelDateRange);
+        eventStartDate = (TextView) findViewById(R.id.labelStart);
+        eventEndDate = (TextView) findViewById(R.id.labelEnd);
         eventDesc = (TextView) findViewById(R.id.labelEventDescription);
     }
 }

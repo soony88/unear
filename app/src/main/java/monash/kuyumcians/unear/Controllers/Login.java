@@ -54,8 +54,7 @@ public class Login extends Activity {
         public void onSuccess(LoginResult loginResult) {
             handleFacebookAccessToken(loginResult.getAccessToken());
 
-            Intent i = new Intent(Login.this, MainActivity.class);
-            startActivity(i);
+            startMainActivity();
         }
 
         @Override
@@ -133,6 +132,15 @@ public class Login extends Activity {
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+
+        if (auth.getCurrentUser() != null) {
+            startMainActivity();
+        }
+    }
+
+    @Override
     public void onStop() {
         super.onStop();
 
@@ -162,5 +170,11 @@ public class Login extends Activity {
                     }
                 }
         });
+    }
+
+    private void startMainActivity() {
+        Intent i = new Intent(Login.this, MainActivity.class);
+        i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(i);
     }
 }

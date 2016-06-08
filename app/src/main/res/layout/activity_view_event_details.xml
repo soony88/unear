@@ -35,12 +35,21 @@
                 <!--android:layout_weight="0.15"/>-->
         </LinearLayout>
 
-        <TextView android:id="@+id/labelDateRange"
+        <TextView android:id="@+id/labelStart"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceMedium"
-            android:text="eventDate"
+            android:text="eventStartDate"
             android:layout_below="@+id/layoutEventTitleAndSave"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentLeft="true" />
+
+        <TextView android:id="@+id/labelEnd"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:text="eventEndDate"
+            android:layout_below="@+id/labelStart"
             android:layout_alignParentStart="true"
             android:layout_alignParentLeft="true" />
 
@@ -49,7 +58,7 @@
             android:layout_width = "fill_parent"
             android:layout_height="2dp"
             android:layout_marginTop="5dp"
-            android:layout_below="@+id/labelDateRange"
+            android:layout_below="@+id/labelEnd"
             android:layout_alignParentRight="true"
             android:layout_alignParentEnd="true" />
 

@@ -44,7 +44,7 @@ public class UnearEvent implements Parcelable, Comparable<UnearEvent> {
 
     @Override
     public int compareTo(UnearEvent anotherEvent) {
-        return anotherEvent.getStartDate().compareTo(this.getStartDate());
+        return this.getStartDate().compareTo(anotherEvent.getStartDate());
     }
 
     public long getId() {

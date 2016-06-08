@@ -10,6 +10,7 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 
 import com.firebase.client.Firebase;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -28,6 +29,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.Map;
 import java.util.Set;
@@ -41,9 +43,6 @@ import monash.kuyumcians.unear.Utils.EventUtils;
 
 public class ViewSearchResultsActivity extends AppCompatActivity {
 
-    public static final String JSON_DOWNLOAD_LOCATION =
-            "https://api.myjson.com/bins/134mg";
-
     // UI components
     SearchFilter searchFilter;
     private ListView searchResultsList;
@@ -51,6 +50,7 @@ public class ViewSearchResultsActivity extends AppCompatActivity {
     private ArrayList<UnearEvent> events;
 
     // Firebase
+    FirebaseAuth auth;
     FirebaseDatabase database;
     DatabaseReference ref;
 
@@ -65,18 +65,23 @@ public class ViewSearchResultsActivity extends AppCompatActivity {
         // Firebase
         database = FirebaseDatabase.getInstance();
         ref = database.getReference("events");
+        auth = FirebaseAuth.getInstance();
+
 
         ref.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
                 // Convert the added object
+                // Need to define a GenericTypeIndicator in order to retrieve the Firebase object correctly
                 GenericTypeIndicator<Map<String, String>> genericTypeIndicator = new GenericTypeIndicator<Map<String, String>>() {};
                 Map<String, String> addedEvent = dataSnapshot.getValue(genericTypeIndicator);
+                UnearEvent event = EventUtils.convertMapToEvent(addedEvent); // Convert it to event object
 
-                UnearEvent event = EventUtils.convertMapToEvent(addedEvent);
-                events.add(event);
-                EventUtils.updateEventsList(events, searchFilter);
-                adapter.notifyDataSetChanged();
+                if (EventUtils.withinFilter(event, searchFilter)) {
+                    events.add(event);
+                    Collections.sort(events);
+                    adapter.notifyDataSetChanged();
+                }
             }
 
             @Override
@@ -109,9 +114,6 @@ public class ViewSearchResultsActivity extends AppCompatActivity {
         adapter = new EventAdapter(this, events);
         searchResultsList.setAdapter(adapter);
 
-        // Retrieve JSON data
-        new SetupArticleDatasetTask().execute(JSON_DOWNLOAD_LOCATION);
-
         // Allow user to tap on event to view event details
         searchResultsList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -126,84 +128,5 @@ public class ViewSearchResultsActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
-    }
-
-    private class SetupArticleDatasetTask extends AsyncTask<String, Void, String> { // Download JSON resource and return String representation
-        protected String doInBackground(String... urls) {
-            try {
-                // Setup HTTP client and request
-                URL downloadUrl = new URL(urls[0]);
-                HttpURLConnection connection = (HttpURLConnection) downloadUrl.openConnection();
-                InputStream input = connection.getInputStream();
-
-                // Process each line of response data
-                String result = "";
-                BufferedReader reader = new BufferedReader(new InputStreamReader(input));
-                StringBuilder sb = new StringBuilder();
-                while ((result = reader.readLine()) != null) {
-                    sb.append(result);
-                }
-                // Return response data as String
-                return sb.toString();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            return null;
-        }
-
-        // Add events to events array after processing resource
-        protected void onPostExecute(String result) {
-            if (result != null) {
-                try {
-                    System.out.println("Success");
-                    JSONObject resultJson = new JSONObject(result);
-
-                    // Move down the JSON tree to where we want
-                    JSONObject responseJson = resultJson.getJSONObject("responseData");
-                    JSONObject university = responseJson.getJSONObject("monashUniversity");
-                    // Grab the array
-                    JSONArray campusJsonArray = university.getJSONArray("campuses");
-
-                    for (int i = 0; i < campusJsonArray.length(); i++) {
-
-                        JSONObject campusJson = campusJsonArray.getJSONObject(i);
-
-                        if (campusJson.getString("campusName").equals(searchFilter.getCampus())) {
-
-                            JSONArray eventsJsonArray = campusJson.getJSONArray("events");
-
-                            for (int j = 0; j < eventsJsonArray.length(); j++) {
-                                // Grab the event object
-                                JSONObject eventJson = eventsJsonArray.getJSONObject(j);
-
-                                // Pull in the data into variables to call the constructor
-                                String name = eventJson.getString("eventName");
-                                String campus = campusJson.getString("campusName");
-                                double latitude = Double.parseDouble(eventJson.getString("eventLatitude"));
-                                double longitude = Double.parseDouble(eventJson.getString("eventLongitude"));
-                                Date startDate = DateUtils.stringToDate(eventJson.getString("eventStartDate"));
-                                Date endDate = DateUtils.stringToDate(eventJson.getString("eventEndDate"));
-                                String type = eventJson.getString("eventType");
-                                String desc = eventJson.getString("eventDescription");
-
-                                if (endDate.compareTo(searchFilter.getStartDate()) == 1) {
-//                                    UnearEvent e = new UnearEvent(name, campus, latitude, longitude, startDate, endDate, type, desc);
-//                                    events.add(e);
-                                }
-                            }
-
-                            // Update listview
-                            adapter.notifyDataSetChanged();
-                        }
-                    }
-                    // Remove label
-//                    labelError.setVisibility(View.INVISIBLE);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-            // Notify user of error
-//            labelError.setText("Could not retrieve results");
-        }
     }
 }

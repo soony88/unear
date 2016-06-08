@@ -9,6 +9,7 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.Date;
 
 import monash.kuyumcians.unear.Models.UnearEvent;
 import monash.kuyumcians.unear.R;
@@ -72,7 +73,9 @@ public class EventAdapter extends BaseAdapter {
         vh.eventName.setText(events.get(i).getEventName());
 
         String stringStartDate = DateUtils.dateToString(events.get(i).getStartDate());
-        vh.eventDate.setText(stringStartDate);
+        long diff = events.get(i).getEndDate().getTime() - events.get(i).getStartDate().getTime();
+        String diffHours = Long.toString(diff / (60 * 60 * 1000));
+        vh.eventDate.setText(stringStartDate + " - " + diffHours + "hrs");
 
         // Allow "Save Event" button to work in a listview
         LayoutInflater inflater = LayoutInflater.from(context);
