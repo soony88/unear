@@ -16,6 +16,7 @@ public class UnearEvent implements Parcelable, Comparable<UnearEvent> {
 
     // Class attributes
     // Identification
+    private long id;
     private String eventName;
     // Location
     private String campus;
@@ -29,7 +30,8 @@ public class UnearEvent implements Parcelable, Comparable<UnearEvent> {
     private String eventDescription;
 
     // Constructor
-    public UnearEvent(String eventName, String campus, double latitude, double longitude, Date startDate, Date endDate, String eventType, String eventDescription) {
+    public UnearEvent(long id, String eventName, String campus, double latitude, double longitude, Date startDate, Date endDate, String eventType, String eventDescription) {
+        this.id = id;
         this.eventName = eventName;
         this.campus = campus;
         this.latitude = latitude;
@@ -43,6 +45,14 @@ public class UnearEvent implements Parcelable, Comparable<UnearEvent> {
     @Override
     public int compareTo(UnearEvent anotherEvent) {
         return anotherEvent.getStartDate().compareTo(this.getStartDate());
+    }
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
     }
 
     public String getEventName() {

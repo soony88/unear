@@ -2,6 +2,7 @@ package monash.kuyumcians.unear.Controllers;
 
 import android.content.Intent;
 import android.os.AsyncTask;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -9,8 +10,13 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 
 import com.firebase.client.Firebase;
+import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.GenericTypeIndicator;
+import com.google.firebase.database.ValueEventListener;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -21,13 +27,17 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
+import java.util.Map;
+import java.util.Set;
 
 import monash.kuyumcians.unear.Adapters.EventAdapter;
 import monash.kuyumcians.unear.Models.SearchFilter;
 import monash.kuyumcians.unear.Models.UnearEvent;
 import monash.kuyumcians.unear.R;
 import monash.kuyumcians.unear.Utils.DateUtils;
+import monash.kuyumcians.unear.Utils.EventUtils;
 
 public class ViewSearchResultsActivity extends AppCompatActivity {
 
@@ -56,7 +66,39 @@ public class ViewSearchResultsActivity extends AppCompatActivity {
         database = FirebaseDatabase.getInstance();
         ref = database.getReference("events");
 
-        ref.setValue("Hello event");
+        ref.addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                // Convert the added object
+                GenericTypeIndicator<Map<String, String>> genericTypeIndicator = new GenericTypeIndicator<Map<String, String>>() {};
+                Map<String, String> addedEvent = dataSnapshot.getValue(genericTypeIndicator);
+
+                UnearEvent event = EventUtils.convertMapToEvent(addedEvent);
+                events.add(event);
+                EventUtils.updateEventsList(events, searchFilter);
+                adapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
+
+            }
+
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
 
         // Grab parcelable SearchFilter from previous activity
         Intent intent = getIntent();
@@ -145,8 +187,8 @@ public class ViewSearchResultsActivity extends AppCompatActivity {
                                 String desc = eventJson.getString("eventDescription");
 
                                 if (endDate.compareTo(searchFilter.getStartDate()) == 1) {
-                                    UnearEvent e = new UnearEvent(name, campus, latitude, longitude, startDate, endDate, type, desc);
-                                    events.add(e);
+//                                    UnearEvent e = new UnearEvent(name, campus, latitude, longitude, startDate, endDate, type, desc);
+//                                    events.add(e);
                                 }
                             }
 
