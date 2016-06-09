@@ -79,17 +79,6 @@ public class EventAdapter extends BaseAdapter {
         vh.eventStartDate.setText(stringStartDate + " - ");
         vh.eventEndDate.setText(stringEndDate);
 
-        // Allow "Save Event" button to work in a listview
-        LayoutInflater inflater = LayoutInflater.from(context);
-        View row = inflater.inflate(R.layout.list_event_result_item, viewGroup, false);
-        Button saveEvent = (Button) row.findViewById(R.id.buttonSaveEvent);
-        saveEvent.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                // TODO Firebase stuff goes here
-                System.out.println("Pingers");
-            }
-        });
-
         return view;
     }
 }

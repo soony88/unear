@@ -140,8 +140,8 @@ public class UnearEvent implements Parcelable, Comparable<UnearEvent> {
 
         this.eventName = in.readString();
         this.campus = in.readString();
-        this.latitude = in.readLong();
-        this.longitude = in.readLong();
+        this.latitude = in.readDouble();
+        this.longitude = in.readDouble();
         this.startDate = DateUtils.stringToDate(in.readString());
         this.endDate = DateUtils.stringToDate(in.readString());
         this.eventType = in.readString();

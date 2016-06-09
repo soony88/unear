@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="monash.kuyumcians.unear.Controllers.ViewSearchResultsActivity">
+    tools:context="monash.kuyumcians.unear.Activities.ViewSearchResultsActivity">
 
     <TextView android:id="@+id/labelHeresWhatsUnearby"
         android:layout_width="wrap_content"

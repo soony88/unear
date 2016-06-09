@@ -1,78 +1,77 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="monash.kuyumcians.unear.Controllers.ViewEventDetailsActivity">
+    android:orientation="vertical"
+    tools:context="monash.kuyumcians.unear.Activities.ViewEventDetailsActivity">
 
-    <!-- Map goes here -->
-
+    <!-- Maps Goes Here -->
+    <fragment xmlns:android="http://schemas.android.com/apk/res/android"
+        android:name="com.google.android.gms.maps.MapFragment"
+        android:id="@+id/map"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1.0"/>
 
     <!-- Event details -->
-    <RelativeLayout
+    <ScrollView
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="24dp">
+        android:layout_height="0dp"
+        android:layout_weight="1.0">
 
-
-        <LinearLayout android:id="@+id/layoutEventTitleAndSave"
-            android:orientation="horizontal"
-            android:layout_width="fill_parent"
+        <RelativeLayout
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/layoutDateRangeLabels">
+            android:padding="10dp">
 
             <TextView android:id="@+id/labelEventName"
                 android:layout_height="wrap_content"
                 android:layout_width="wrap_content"
                 android:textAppearance="?android:attr/textAppearanceLarge"
-                android:layout_weight="0.85"
                 android:text="EventTitle"
                 android:textColor="@color/colorPrimary"/>
 
-            <!-- Add to saved events -->
-            <!--<Button-->
-                <!--android:layout_height="wrap_content"-->
-                <!--android:layout_weight="0.15"/>-->
-        </LinearLayout>
+            <TextView android:id="@+id/labelStart"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="eventStartDate"
+                android:layout_below="@+id/labelEventName"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentLeft="true" />
 
-        <TextView android:id="@+id/labelStart"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:text="eventStartDate"
-            android:layout_below="@+id/layoutEventTitleAndSave"
-            android:layout_alignParentStart="true"
-            android:layout_alignParentLeft="true" />
+            <TextView android:id="@+id/labelEnd"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="eventEndDate"
+                android:layout_below="@+id/labelStart"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentLeft="true" />
 
-        <TextView android:id="@+id/labelEnd"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:text="eventEndDate"
-            android:layout_below="@+id/labelStart"
-            android:layout_alignParentStart="true"
-            android:layout_alignParentLeft="true" />
+            <View android:id="@+id/separator"
+                android:background="#eaeaea"
+                android:layout_width = "fill_parent"
+                android:layout_height="2dp"
+                android:layout_marginTop="5dp"
+                android:layout_below="@+id/labelEnd"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentEnd="true" />
 
-        <View android:id="@+id/separator"
-            android:background="#eaeaea"
-            android:layout_width = "fill_parent"
-            android:layout_height="2dp"
-            android:layout_marginTop="5dp"
-            android:layout_below="@+id/labelEnd"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentEnd="true" />
+            <TextView android:id="@+id/labelEventDescription"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:textColor="@color/colorBlack"
+                android:text="eventDescription"
+                android:layout_below="@+id/separator"
+                android:layout_marginTop="5dp"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentLeft="true" />
 
-        <TextView android:id="@+id/labelEventDescription"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:textColor="@color/colorBlack"
-            android:text="eventDescription"
-            android:layout_below="@+id/separator"
-            android:layout_marginTop="5dp"
-            android:layout_alignParentStart="true"
-            android:layout_alignParentLeft="true" />
-
-    </RelativeLayout>
-
-</RelativeLayout>
+        </RelativeLayout>
+    </ScrollView>
+</LinearLayout>

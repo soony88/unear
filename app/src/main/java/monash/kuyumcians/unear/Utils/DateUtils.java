@@ -24,6 +24,11 @@ public class DateUtils {
         return myString;
     }
 
+    /**
+     * Converts a date stored as a String into a Date object
+     * @param date
+     * @return
+     */
     public static Date stringToDate(String date) {
         Date myDate = new Date();
         try {

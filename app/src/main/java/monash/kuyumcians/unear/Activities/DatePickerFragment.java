@@ -1,4 +1,4 @@
-package monash.kuyumcians.unear.Controllers;
+package monash.kuyumcians.unear.Activities;
 
 import android.app.DatePickerDialog;
 import android.app.Dialog;
